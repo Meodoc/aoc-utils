@@ -1,0 +1,23 @@
+#!/bin/bash
+
+YEAR=2023
+DAY=""
+
+while getopts "d:" opt; do
+  case ${opt} in
+    d)
+      DAY=$OPTARG
+      ;;
+    \?)
+      echo "Usage: $0 -d <day>"
+      exit 1
+      ;;
+  esac
+done
+
+if [ -z "$DAY" ]; then
+  DAY=$(date +"%e" | tr -d ' ')
+fi
+
+curl -b session=$(cat ${HOME}/.aocrc) https://adventofcode.com/${YEAR}/day/${DAY}/input > ${DAY}.in
+

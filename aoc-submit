@@ -1,0 +1,44 @@
+#!/bin/bash
+
+YEAR=2023
+DAY=""
+LEVEL="1"
+ANSWER=""
+
+while getopts "d:l:" opt; do
+  case ${opt} in
+    d)
+      DAY=$OPTARG
+      ;;
+    l)
+      LEVEL=$OPTARG
+      ;;
+    \?)
+      echo "Usage: $0 [-d <day>] [-l <level>] [answer]"
+      exit 1
+      ;;
+  esac
+done
+
+shift $((OPTIND - 1))
+
+if [ -z "$DAY" ]; then
+  DAY=$(date +"%e" | tr -d ' ')
+fi
+
+if [ $# -gt 0 ]; then
+  ANSWER=$1
+fi
+
+if [ -z "$ANSWER" ]; then
+  ANSWER_FILE="b.out"
+  if [ "$LEVEL" == "1" ]; then
+    ANSWER_FILE="a.out"
+  fi
+  ANSWER=$(cat "${ANSWER_FILE}" | tr -d '\n')
+fi
+
+curl -X POST https://adventofcode.com/${YEAR}/day/${DAY}/answer \
+    --data-raw "level=${LEVEL}&answer=${ANSWER}" \
+    -b "session=$(cat ~/.aocrc)"
+
