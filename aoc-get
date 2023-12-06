@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 YEAR=2023
 DAY=""
 
@@ -16,7 +17,7 @@ while getopts "d:" opt; do
 done
 
 if [ -z "$DAY" ]; then
-  DAY=$(date +"%e" | tr -d ' ')
+  DAY=${PWD##*/}
 fi
 
 curl -b session=$(cat ${HOME}/.aocrc) https://adventofcode.com/${YEAR}/day/${DAY}/input > ${DAY}.in

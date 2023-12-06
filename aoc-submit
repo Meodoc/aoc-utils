@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 YEAR=2023
 DAY=""
 LEVEL="1"
@@ -23,7 +24,7 @@ done
 shift $((OPTIND - 1))
 
 if [ -z "$DAY" ]; then
-  DAY=$(date +"%e" | tr -d ' ')
+  DAY=${PWD##*/}
 fi
 
 if [ $# -gt 0 ]; then

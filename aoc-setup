@@ -16,7 +16,7 @@ while getopts "d:" opt; do
 done
 
 if [ -z "$DAY" ]; then
-  DAY=$(date +"%e" | tr -d ' ')
+  DAY=${PWD##*/}
 fi
 
 FNAME=day${DAY}.py
@@ -25,3 +25,4 @@ touch $FNAME
 echo -e '#!/bin/python\n\n' > $FNAME
 echo -e 'import sys\n\n' >> $FNAME
 echo -e 'content = sys.stdin.read()' >> $FNAME 
+chmod 755 $FNAME
