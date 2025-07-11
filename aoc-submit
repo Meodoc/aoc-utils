@@ -1,18 +1,28 @@
 #!/bin/bash
 
 
+SUCCESS_MESSAGE_1="That's the right answer! ⭐"
+SUCCESS_MESSAGE_2="That's the right answer! ⭐⭐"
+FAIL_MESSAGE="Wrong answer: %s%s 😭"
+
+SUCCESS_STR="That's the right answer"
+FAIL_STR="That's not the right answer"
+
 YEAR=2023
 DAY=""
 LEVEL="1"
 ANSWER=""
 
-while getopts "d:l:" opt; do
+while getopts "d:l:v" opt; do
   case ${opt} in
     d)
       DAY=$OPTARG
       ;;
     l)
       LEVEL=$OPTARG
+      ;;
+    v)
+      VERBOSE=true
       ;;
     \?)
       echo "Usage: $0 [-d <day>] [-l <level>] [answer]"
@@ -39,7 +49,31 @@ if [ -z "$ANSWER" ]; then
   ANSWER=$(cat "${ANSWER_FILE}" | tr -d '\n')
 fi
 
-curl -X POST https://adventofcode.com/${YEAR}/day/${DAY}/answer \
-    --data-raw "level=${LEVEL}&answer=${ANSWER}" \
-    -b "session=$(cat ~/.aocrc)"
+RESPONSE=$(curl -X POST https://adventofcode.com/${YEAR}/day/${DAY}/answer \
+  --data-raw "level=${LEVEL}&answer=${ANSWER}" \
+  -b "session=$(cat ~/.aocrc)")
 
+SUCCESS=$(echo "$RESPONSE" | grep -q "$SUCCESS_STR" && echo true)
+FAILURE=$(echo "$RESPONSE" | grep -q "$FAIL_STR" && echo true)
+FAIL_HINT=$(echo "$RESPONSE" | grep -oE 'too \w+')
+
+if [ "$SUCCESS" = true ]; then
+  if [ "$LEVEL" == "1" ]; then
+    echo "$SUCCESS_MESSAGE_1"
+  else
+    echo "$SUCCESS_MESSAGE_2"
+  fi
+elif [ "$FAILURE" = true ]; then
+  if [ -n "$FAIL_HINT" ]; then
+    printf "$FAIL_MESSAGE" "$ANSWER" " ($FAIL_HINT)"
+  else
+    printf "$FAIL_MESSAGE" "$ANSWER" ""
+  fi
+else
+  echo "Error: Unexpected response. Run the script with -v for more information."
+fi
+
+if [ "$VERBOSE" = true ]; then
+  echo "HTML RESPONSE:"
+  echo "$RESPONSE"
+fi

@@ -19,7 +19,7 @@ if [ -z "$DAY" ]; then
   DAY=${PWD##*/}
 fi
 
-FNAME=day${DAY}.py
+FNAME=day${DAY}_a.py
 
 touch $FNAME
 echo -e '#!/bin/python\n\n' > $FNAME
